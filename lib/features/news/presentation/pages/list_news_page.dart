@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_clean_architectur/features/news/domain/entities/news.dart';
+import 'package:news_clean_architectur/features/news/presentation/cubit/cubit/news_cubit.dart';
 import 'package:news_clean_architectur/features/news/presentation/widgets/news_card.dart';
 
 class ListNewsPage extends StatelessWidget {
@@ -24,19 +26,31 @@ class ListNewsPage extends StatelessWidget {
         title: const Text("News Today"),
       ),
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 16,
-          ),
-          itemCount: 8,
-          separatorBuilder: (context, index) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 5),
-              child: Divider(),
-            );
+        child: BlocBuilder<NewsCubit, NewsState>(
+          builder: (context, state) {
+            if (state.status == NewsStatus.loading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state.status == NewsStatus.success) {
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                itemCount: state.data.length,
+                separatorBuilder: (context, index) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Divider(),
+                  );
+                },
+                itemBuilder: (context, index) =>
+                    NewsCard(data: state.data[index]),
+              );
+            } else if (state.status == NewsStatus.eror) {
+              return Center(child: Text("eror = ${state.eror}"));
+            }
+            return const SizedBox();
           },
-          itemBuilder: (context, index) => NewsCard(data: dummy),
         ),
       ),
     );

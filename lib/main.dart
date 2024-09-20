@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_clean_architectur/features/news/presentation/cubit/cubit/news_cubit.dart';
 import 'package:news_clean_architectur/features/news/presentation/pages/list_news_page.dart';
+import 'package:news_clean_architectur/injection_container.dart';
 
-void main() {
+Future<void> main() async {
+  await initializeDepenencied();
   runApp(const MainApp());
 }
 
@@ -10,8 +14,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ListNewsPage(),
+    return BlocProvider<NewsCubit>(
+      create: (context) => sl()..getALlNews(),
+      child: const MaterialApp(
+        home: ListNewsPage(),
+      ),
     );
   }
 }
